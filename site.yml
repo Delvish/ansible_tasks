@@ -1,0 +1,9 @@
+- hosts: all
+  become: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - luks_disk
+    - cpu_tuning
+    - network_rename
+    - facts_report

@@ -1,0 +1,4 @@
+- shell: lscpu
+  register: cpu
+  changed_when: false
+- debug: var=cpu.stdout_lines

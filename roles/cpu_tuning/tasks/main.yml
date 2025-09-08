@@ -1,0 +1,11 @@
+- lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX='
+    line: 'GRUB_CMDLINE_LINUX="intel_idle.max_cstate=1 processor.max_cstate=1"'
+- command: update-grub
+  register: g
+  changed_when: g.rc == 0
+- shell: echo "ladder" > /sys/devices/system/cpu/cpuidle/current_governor
+  args:
+    executable: /bin/bash
+  ignore_errors: yes

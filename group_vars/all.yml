@@ -1,0 +1,4 @@
+crypto_partition: "/dev/xvdf"
+luks_passphrase: "Passw0rd"
+net_desired_name: "net0"
+net_source_name: "enX0"

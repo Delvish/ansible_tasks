@@ -1,0 +1,4 @@
+- template:
+    src: net0.link.j2
+    dest: /etc/systemd/network/10-net0.link
+- debug: msg="{{ net_source_name }} renamed to {{ net_desired_name }}"
