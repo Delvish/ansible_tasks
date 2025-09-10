@@ -1,0 +1,9 @@
+network:
+  version: 2
+  ethernets:
+    {{ net_desired_name }}:
+      match:
+        macaddress: "02:4c:60:35:67:0b"
+      dhcp4: true
+      dhcp6: false
+      set-name: "{{ net_desired_name }}"

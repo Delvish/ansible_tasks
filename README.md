@@ -3,7 +3,7 @@
 ansible-playbook -i inventory.ini site.yml
 ```
 
-# Выполнеямые роли
+# Выполняемые роли
 - шифрует /dev/xvdf
 - монтирует в /mnt/crypted
 - выключаем c-state
