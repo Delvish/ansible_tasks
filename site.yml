@@ -5,5 +5,5 @@
   roles:
     - luks_disk
     - cpu_tuning
-    - network_rename
     - facts_report
+    - network_rename

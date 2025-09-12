@@ -1,25 +1,24 @@
-- name: check if partition is luks
-  shell: cryptsetup isLuks {{ crypto_partition }}
-  register: luks_check
-  ignore_errors: yes
-  changed_when: false
+- name: luks format
+  community.crypto.luks_device:
+    device: "{{ crypto_partition }}"
+    name: crypt_data
+    state: opened
+    passphrase: "{{ luks_passphrase }}"
+    type: luks2
 
-- name: format luks if not exists
-  shell: echo "{{ luks_passphrase }}" | cryptsetup luksFormat {{ crypto_partition }} --batch-mode -
-  when: luks_check.rc != 0
+- name: create filesystem
+  ansible.builtin.filesystem:
+    fstype: ext4
+    dev: /dev/mapper/crypt_data
 
-- name: open luks
-  shell: echo "{{ luks_passphrase }}" | cryptsetup open {{ crypto_partition }} crypt_data --key-file=-
-  ignore_errors: yes
-
-- name: create filesystem if not exists
-  shell: blkid /dev/mapper/crypt_data || mkfs.ext4 /dev/mapper/crypt_data
-
-- name: ensure mount point exists
+- name: ensure mountpoint exists
   file:
     path: /mnt/crypted
     state: directory
-    mode: "0755"
 
 - name: mount luks
-  shell: mountpoint -q /mnt/crypted || mount /dev/mapper/crypt_data /mnt/crypted
+  mount:
+    path: /mnt/crypted
+    src: /dev/mapper/crypt_data
+    fstype: ext4
+    state: mounted

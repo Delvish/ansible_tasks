@@ -1,11 +1,25 @@
-- name: configure netplan
-  template:
-    src: netplan.yaml.j2
-    dest: /etc/netplan/50-cloud-init.yaml
-    mode: '0644'
+- name: get current interface name
+  shell: |
+    awk '/ethernets:/ {getline; gsub(":",""); print $1}' /etc/netplan/50-cloud-init.yaml
+  register: net_iface
+  changed_when: false
 
-- name: apply netplan
-  command: netplan try --timeout 20
-  ignore_errors: yes
+- name: set ethernet key
+  replace:
+    path: /etc/netplan/50-cloud-init.yaml
+    regexp: '^\s+{{ net_iface.stdout }}:'
+    replace: '    {{ net_desired_name }}:'
 
-- debug: msg="{{ net_source_name }} renamed to {{ net_desired_name }}"
+- name: set set-name value
+  replace:
+    path: /etc/netplan/50-cloud-init.yaml
+    regexp: 'set-name:\s*".*"'
+    replace: 'set-name: "{{ net_desired_name }}"'
+
+- name: live rename
+  become: true
+  shell: 'ip link set {{ net_iface.stdout }} name {{ net_desired_name }} && netplan apply'
+
+#- name: apply netplan
+#  command: netplan try --timeout 20
+#  ignore_errors: yes
